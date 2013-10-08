@@ -261,6 +261,8 @@ namespace Dynamo.Controls
         private void NickNameBlock_OnMouseEnter(object sender, MouseEventArgs e)
         {
             TextBlock textBlock = sender as TextBlock;
+            if (string.IsNullOrEmpty(ViewModel.NickName) && string.IsNullOrEmpty(ViewModel.Description))
+                return;
             string tooltipContent = ViewModel.NickName + '\n' + ViewModel.Description;
             UIElement containingWorkspace = WPF.FindUpVisualTree<TabControl>(this);
             Point topLeft = textBlock.TranslatePoint(new Point(0, 0), containingWorkspace);
@@ -280,6 +282,8 @@ namespace Dynamo.Controls
         {
             ContentPresenter inputPort = sender as ContentPresenter;
             string content = (inputPort.Content as PortViewModel).ToolTipContent;
+            if (string.IsNullOrEmpty(content))
+                return;
             UIElement containingWorkspace = WPF.FindUpVisualTree<TabControl>(this);
             Point topLeft = inputPort.TranslatePoint(new Point(0, 0), containingWorkspace);
             double actualWidth = inputPort.ActualWidth * dynSettings.Controller.DynamoViewModel.CurrentSpaceViewModel.Zoom;
@@ -303,6 +307,8 @@ namespace Dynamo.Controls
         {
             ContentPresenter outputPort = sender as ContentPresenter;
             string content = (outputPort.Content as PortViewModel).ToolTipContent;
+            if (string.IsNullOrEmpty(content))
+                return;
             UIElement containingWorkspace = WPF.FindUpVisualTree<TabControl>(this);
             Point topLeft = outputPort.TranslatePoint(new Point(0, 0), containingWorkspace);
             double actualWidth = outputPort.ActualWidth * dynSettings.Controller.DynamoViewModel.CurrentSpaceViewModel.Zoom;
