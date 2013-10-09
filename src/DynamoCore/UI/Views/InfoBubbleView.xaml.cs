@@ -151,5 +151,27 @@ namespace Dynamo.Controls
                 ShowPreviewBubbleCondensedContent();
             }
         }
+
+        private void VerticalResizeBar_MouseEnter(object sender, MouseEventArgs e)
+        {
+            Mouse.OverrideCursor = Cursors.SizeWE;
+        }
+
+        private void VerticalResizeBar_MouseLeave(object sender, MouseEventArgs e)
+        {
+            Mouse.OverrideCursor = null;
+        }
+
+        private void VerticalResizeBar_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            dynSettings.Controller.DynamoViewModel.CurrentSpaceViewModel.ResizingPreview = this.ViewModel;
+            ViewModel.SetAlwaysVisibleCommand.Execute(true);
+        }
+
+        private void VerticalResizeBar_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            dynSettings.Controller.DynamoViewModel.CurrentSpaceViewModel.ResizingPreview = null;
+            ViewModel.SetAlwaysVisibleCommand.Execute(false);
+        }
     }
 }

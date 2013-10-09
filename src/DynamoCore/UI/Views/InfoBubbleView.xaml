@@ -12,9 +12,10 @@
         </ResourceDictionary>
     </UserControl.Resources>
     
-    <Grid x:Name="mainGrid" Background="Transparent" Opacity="{Binding Path=Opacity}" HorizontalAlignment="Left" VerticalAlignment="Top"
+    <Grid x:Name="mainGrid" Background="Blue" Opacity="{Binding Path=Opacity}" HorizontalAlignment="Left" VerticalAlignment="Top"
           Margin="{Binding Path=Margin}" Visibility="{Binding Path=Opacity, Converter={StaticResource OpacityToVisibilityConverter}}"
            MouseLeave="InfoBubble_MouseLeave">
+        
         <Polygon Name="backgroundPolygon" Fill="{Binding Path=FrameFill}" Stroke="{Binding Path=FrameStrokeColor}" 
                  StrokeThickness="{Binding Path=FrameStrokeThickness}" Points="{Binding Path=FramePoints}"
                  MouseDown="InfoBubble_PreviewMouseDown">
@@ -82,5 +83,12 @@
                 </Style>
             </StackPanel.Resources>
         </StackPanel>
+        
+        <Rectangle Name="VerticalResizeBar" Width="5" HorizontalAlignment="Right" Fill="Red" StrokeThickness="0"
+                   MouseEnter="VerticalResizeBar_MouseEnter" MouseLeave="VerticalResizeBar_MouseLeave"
+                   MouseDown="VerticalResizeBar_MouseDown" MouseUp="VerticalResizeBar_MouseUp"/>
+
+        <Rectangle Name="HorizontalResizeBar" Height="5" VerticalAlignment="Bottom" Fill="Red" StrokeThickness="0"/>        
+        
     </Grid>
 </UserControl>

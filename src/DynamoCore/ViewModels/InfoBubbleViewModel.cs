@@ -183,6 +183,9 @@ namespace Dynamo.ViewModels
         private Direction limitedDirection = Direction.None;
         private bool alwaysVisible = false;
 
+        private double originalWidth;
+        private double originalHeight;
+
         #endregion
 
         #region Public Methods
@@ -209,6 +212,8 @@ namespace Dynamo.ViewModels
             UpdateContent(data.Text);
             UpdateShape(data.TopLeft, data.BotRight);
             UpdatePosition(data.TopLeft, data.BotRight);
+            originalWidth = EstimatedWidth;
+            originalHeight = EstimatedHeight;
         }
 
         private bool CanUpdateInfoBubbleCommand(object parameter)
@@ -271,6 +276,22 @@ namespace Dynamo.ViewModels
         }
 
         private bool CanSetAlwaysVisible(object parameter)
+        {
+            return true;
+        }
+
+        private void Resize(object parameter)
+        {
+            Point deltaPoint = (Point)parameter;
+            double deltaX = deltaPoint.X;
+            double deltaY = deltaPoint.Y;
+
+            UpdateShape(deltaX, deltaY);
+            UpdateContent(Content);
+            UpdatePosition(this.TargetTopLeft, this.TargetBotRight);
+        }
+
+        private bool CanResize(object parameter)
         {
             return true;
         }
@@ -353,6 +374,15 @@ namespace Dynamo.ViewModels
                 case Style.None:
                     break;
             }
+        }
+
+        private void UpdateShape(double deltaX, double deltaY)
+        {
+            double width = originalWidth + deltaX;
+            double height = originalHeight + deltaY;
+            FramePoints = GetFramePoints_Preview(width, height);
+            MaxWidth = width;
+            MaxHeight = height;
         }
 
         private Thickness GetMargin_LibraryItemPreview(Point topLeft, Point botRight)
@@ -670,6 +700,20 @@ namespace Dynamo.ViewModels
             pointCollection.Add(new Point(0, EstimatedHeight));
             pointCollection.Add(new Point(EstimatedWidth, EstimatedHeight));
             return pointCollection;
+        }
+
+        private PointCollection GetFramePoints_Preview(double width, double height)
+        {
+            PointCollection pointCollection = new PointCollection();
+            pointCollection.Add(new Point(width, 7));
+            pointCollection.Add(new Point(width / 2 + 7, 7));
+            pointCollection.Add(new Point(width / 2, 0));
+            pointCollection.Add(new Point(width / 2 - 7, 7));
+            pointCollection.Add(new Point(0, 7));
+            pointCollection.Add(new Point(0, height));
+            pointCollection.Add(new Point(width, height));
+            return pointCollection;
+
         }
 
         private void MakeFitInView()

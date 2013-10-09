@@ -13,6 +13,7 @@ using System.Windows.Threading;
 using Dynamo.Models;
 using Dynamo.Selection;
 using MouseEventArgs = System.Windows.Input.MouseEventArgs;
+using Dynamo.Utilities;
 
 namespace Dynamo.Controls
 {
@@ -46,6 +47,9 @@ namespace Dynamo.Controls
 
         //true if we're ignoring clicks
         public bool ignoreClick;
+
+        //true if a previewBubble resizing operation is in process, else false
+        private bool isResizePreviewInProcess;
 
         #endregion // Data
 
@@ -134,7 +138,7 @@ namespace Dynamo.Controls
                 foreach (ISelectable sel in e.NewItems)
                 {
                     var n = sel as ILocatable;
-                    
+
                     if (n == null)
                         continue;
                     //n.Select();
@@ -316,6 +320,16 @@ namespace Dynamo.Controls
                 Point pt = e.GetPosition(this);
                 Debug.WriteLine(string.Format("Hit point x:{0} y:{0}", pt.X, pt.Y));
 
+                //Check if the mouse coordinates are in it preview resize bar, if so, start resizing
+                //(the preview bubble must be in the full form)
+                if (dynSettings.Controller.DynamoViewModel.CurrentSpaceViewModel.CheckMouseOnPreviewResizeBar())
+                {
+                    isResizePreviewInProcess = true;
+                    this.origCursorLocation = e.GetPosition(this);
+                    e.Handled = true;
+                    return;
+                }
+
                 if (DynamoSelection.Instance.Selection.Count == 0)
                     return;
 
@@ -324,7 +338,7 @@ namespace Dynamo.Controls
                 foreach (ISelectable sel in DynamoSelection.Instance.Selection)
                 {
                     var el = sel as ILocatable;
-                    if(el == null)
+                    if (el == null)
                         continue;
 
                     if (el.Rect.Contains(pt))
@@ -354,109 +368,125 @@ namespace Dynamo.Controls
         {
             base.OnPreviewMouseMove(e);
 
-            if (DynamoSelection.Instance.Selection.Count == 0 || !this.isDragInProgress)
-                return;
-
-            // Get the position of the mouse cursor, relative to the Canvas.
-            Point cursorLocation = e.GetPosition(this);
-
-            #region Calculate Offsets
-
-            int count = 0;
-            foreach (ISelectable sel in DynamoSelection.Instance.Selection)
+            if (isDragInProgress)
             {
-                OffsetData od = offsets[count];
+                #region Drag Node
+                if (DynamoSelection.Instance.Selection.Count == 0 || !this.isDragInProgress)
+                    return;
 
-                // Determine the horizontal offset.
-                if (od.ModifyLeftOffset)
-                    od.NewHorizontalOffset = od.OriginalHorizontalOffset + (cursorLocation.X - this.origCursorLocation.X);
-                else
-                    od.NewHorizontalOffset = od.OriginalHorizontalOffset - (cursorLocation.X - this.origCursorLocation.X);
+                // Get the position of the mouse cursor, relative to the Canvas.
+                Point cursorLocation = e.GetPosition(this);
 
-                // Determine the vertical offset.
-                if (od.ModifyTopOffset)
-                    od.NewVerticalOffset = od.OriginalVerticalOffset + (cursorLocation.Y - this.origCursorLocation.Y);
-                else
-                    od.NewVerticalOffset = od.OriginalVerticalOffset - (cursorLocation.Y - this.origCursorLocation.Y);
+                #region Calculate Offsets
 
-                //Debug.WriteLine(string.Format("New h:{0} v:{1}", od.NewHorizontalOffset, od.NewVerticalOffset));
-                count++;
-            }
-
-            #endregion // Calculate Offsets
-
-            if (!this.AllowDragOutOfView)
-            {
-                #region Verify Drag Element Location
-
-                count = 0;
+                int count = 0;
                 foreach (ISelectable sel in DynamoSelection.Instance.Selection)
                 {
-                    var el = sel as ILocatable;
-                    if (el == null)
-                        continue;
-
                     OffsetData od = offsets[count];
 
-                    // Get the bounding rect of the drag element.
-                    Rect elemRect = this.CalculateDragElementRect(el, od.NewHorizontalOffset, od.NewVerticalOffset, od.ModifyLeftOffset, od.ModifyTopOffset);
+                    // Determine the horizontal offset.
+                    if (od.ModifyLeftOffset)
+                        od.NewHorizontalOffset = od.OriginalHorizontalOffset + (cursorLocation.X - this.origCursorLocation.X);
+                    else
+                        od.NewHorizontalOffset = od.OriginalHorizontalOffset - (cursorLocation.X - this.origCursorLocation.X);
 
-                    // If the element is being dragged out of the viewable area, 
-                    // determine the ideal rect location, so that the element is 
-                    // within the edge(s) of the canvas.
-                    //
-                    bool leftAlign = elemRect.Left < 0;
-                    bool rightAlign = elemRect.Right > this.ActualWidth;
+                    // Determine the vertical offset.
+                    if (od.ModifyTopOffset)
+                        od.NewVerticalOffset = od.OriginalVerticalOffset + (cursorLocation.Y - this.origCursorLocation.Y);
+                    else
+                        od.NewVerticalOffset = od.OriginalVerticalOffset - (cursorLocation.Y - this.origCursorLocation.Y);
 
-                    if (leftAlign)
-                        od.NewHorizontalOffset = od.ModifyLeftOffset ? 0 : this.ActualWidth - elemRect.Width;
-                    else if (rightAlign)
-                        od.NewHorizontalOffset = od.ModifyLeftOffset ? this.ActualWidth - elemRect.Width : 0;
-
-                    bool topAlign = elemRect.Top < 0;
-                    bool bottomAlign = elemRect.Bottom > this.ActualHeight;
-
-                    if (topAlign)
-                        od.NewVerticalOffset = od.ModifyTopOffset ? 0 : this.ActualHeight - elemRect.Height;
-                    else if (bottomAlign)
-                        od.NewVerticalOffset = od.ModifyTopOffset ? this.ActualHeight - elemRect.Height : 0;
+                    //Debug.WriteLine(string.Format("New h:{0} v:{1}", od.NewHorizontalOffset, od.NewVerticalOffset));
                     count++;
                 }
 
-                #endregion // Verify Drag Element Location
-            }
+                #endregion // Calculate Offsets
 
-            #region Move Drag Element
-            count = 0;
-            this.Dispatcher.Invoke(new Action(
-                  delegate
-                  {
-                      foreach (ISelectable sel in DynamoSelection.Instance.Selection)
+                if (!this.AllowDragOutOfView)
+                {
+                    #region Verify Drag Element Location
+
+                    count = 0;
+                    foreach (ISelectable sel in DynamoSelection.Instance.Selection)
+                    {
+                        var el = sel as ILocatable;
+                        if (el == null)
+                            continue;
+
+                        OffsetData od = offsets[count];
+
+                        // Get the bounding rect of the drag element.
+                        Rect elemRect = this.CalculateDragElementRect(el, od.NewHorizontalOffset, od.NewVerticalOffset, od.ModifyLeftOffset, od.ModifyTopOffset);
+
+                        // If the element is being dragged out of the viewable area, 
+                        // determine the ideal rect location, so that the element is 
+                        // within the edge(s) of the canvas.
+                        //
+                        bool leftAlign = elemRect.Left < 0;
+                        bool rightAlign = elemRect.Right > this.ActualWidth;
+
+                        if (leftAlign)
+                            od.NewHorizontalOffset = od.ModifyLeftOffset ? 0 : this.ActualWidth - elemRect.Width;
+                        else if (rightAlign)
+                            od.NewHorizontalOffset = od.ModifyLeftOffset ? this.ActualWidth - elemRect.Width : 0;
+
+                        bool topAlign = elemRect.Top < 0;
+                        bool bottomAlign = elemRect.Bottom > this.ActualHeight;
+
+                        if (topAlign)
+                            od.NewVerticalOffset = od.ModifyTopOffset ? 0 : this.ActualHeight - elemRect.Height;
+                        else if (bottomAlign)
+                            od.NewVerticalOffset = od.ModifyTopOffset ? this.ActualHeight - elemRect.Height : 0;
+                        count++;
+                    }
+
+                    #endregion // Verify Drag Element Location
+                }
+
+                #region Move Drag Element
+                count = 0;
+                this.Dispatcher.Invoke(new Action(
+                      delegate
                       {
-                          var el = sel as ILocatable;
-                          if (el == null)
-                              continue;
+                          foreach (ISelectable sel in DynamoSelection.Instance.Selection)
+                          {
+                              var el = sel as ILocatable;
+                              if (el == null)
+                                  continue;
 
-                          var od = offsets[count];
+                              var od = offsets[count];
 
-                          if (od.ModifyLeftOffset)
-                              //Canvas.SetLeft(el, od.NewHorizontalOffset);
-                              el.X = od.NewHorizontalOffset;
-                          else
-                              //Canvas.SetRight(el, od.NewHorizontalOffset);
-                              el.X = od.NewHorizontalOffset + el.Width;
-                          if (od.ModifyTopOffset)
-                              //Canvas.SetTop(el, od.NewVerticalOffset);
-                              el.Y = od.NewVerticalOffset;
-                          else
-                              //Canvas.SetBottom(el, od.NewVerticalOffset);
-                              el.Y = od.NewHorizontalOffset + el.Height;
-                          count++;
+                              if (od.ModifyLeftOffset)
+                                  //Canvas.SetLeft(el, od.NewHorizontalOffset);
+                                  el.X = od.NewHorizontalOffset;
+                              else
+                                  //Canvas.SetRight(el, od.NewHorizontalOffset);
+                                  el.X = od.NewHorizontalOffset + el.Width;
+                              if (od.ModifyTopOffset)
+                                  //Canvas.SetTop(el, od.NewVerticalOffset);
+                                  el.Y = od.NewVerticalOffset;
+                              else
+                                  //Canvas.SetBottom(el, od.NewVerticalOffset);
+                                  el.Y = od.NewHorizontalOffset + el.Height;
+                              count++;
+                          }
                       }
-                  }
-               ), DispatcherPriority.Render, null);
-            #endregion // Move Drag Element
+                   ), DispatcherPriority.Render, null);
+                #endregion // Move Drag Element
+                #endregion
+            }
+            else if (isResizePreviewInProcess)
+            {
+                #region Resize Preview
 
+                Point cursorLocation = e.GetPosition(this);
+                double deltaX = cursorLocation.X - this.origCursorLocation.X;
+                double deltaY = cursorLocation.Y - this.origCursorLocation.Y;
+
+                dynSettings.Controller.DynamoViewModel.CurrentSpaceViewModel.ResizePreview(deltaX, deltaY);
+
+                #endregion
+            }
         }
 
         #endregion // OnPreviewMouseMove
@@ -468,6 +498,8 @@ namespace Dynamo.Controls
             base.OnMouseUp(e);
 
             this.isDragInProgress = false;
+            this.isResizePreviewInProcess = false;
+            dynSettings.Controller.DynamoViewModel.CurrentSpaceViewModel.ResizingPreview = null;
 
             // recalculate the offsets for all items in
             // the selection. 
