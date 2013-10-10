@@ -164,14 +164,13 @@ namespace Dynamo.Controls
 
         private void VerticalResizeBar_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            dynSettings.Controller.DynamoViewModel.CurrentSpaceViewModel.ResizingPreview = this.ViewModel;
-            ViewModel.SetAlwaysVisibleCommand.Execute(true);
+
+            Mouse.Capture(this);
         }
 
         private void VerticalResizeBar_MouseUp(object sender, MouseButtonEventArgs e)
         {
-            dynSettings.Controller.DynamoViewModel.CurrentSpaceViewModel.ResizingPreview = null;
-            ViewModel.SetAlwaysVisibleCommand.Execute(false);
+            Mouse.Capture(null);
         }
     }
 }

@@ -183,8 +183,8 @@ namespace Dynamo.ViewModels
         private Direction limitedDirection = Direction.None;
         private bool alwaysVisible = false;
 
-        private double originalWidth;
-        private double originalHeight;
+        private double fullPreviewlWidth;
+        private double fullPreviewHeight;
 
         #endregion
 
@@ -212,8 +212,6 @@ namespace Dynamo.ViewModels
             UpdateContent(data.Text);
             UpdateShape(data.TopLeft, data.BotRight);
             UpdatePosition(data.TopLeft, data.BotRight);
-            originalWidth = EstimatedWidth;
-            originalHeight = EstimatedHeight;
         }
 
         private bool CanUpdateInfoBubbleCommand(object parameter)
@@ -378,8 +376,6 @@ namespace Dynamo.ViewModels
 
         private void UpdateShape(double deltaX, double deltaY)
         {
-            double width = originalWidth + deltaX;
-            double height = originalHeight + deltaY;
             FramePoints = GetFramePoints_Preview(width, height);
             MaxWidth = width;
             MaxHeight = height;

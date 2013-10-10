@@ -369,8 +369,6 @@ namespace Dynamo.ViewModels
 
         public Action FindNodesFromElements { get; set; }
 
-        public InfoBubbleViewModel ResizingPreview;
-
         #endregion
 
         public WorkspaceViewModel(WorkspaceModel model, DynamoViewModel vm)
@@ -603,19 +601,6 @@ namespace Dynamo.ViewModels
                            .Cast<ILocatable>()
                            .Select((x) => x.Y)
                            .Max();
-        }
-
-        public bool CheckMouseOnPreviewResizeBar()
-        {
-            if (ResizingPreview != null)
-                return true;
-            return false;
-        }
-
-        public void ResizePreview(double deltaX, double deltaY)
-        {
-            Point deltaPoint = new Point(deltaX, deltaY);
-            ResizingPreview.ResizeCommand.Execute(deltaPoint);
         }
 
         public void AlignSelected(object parameter)
