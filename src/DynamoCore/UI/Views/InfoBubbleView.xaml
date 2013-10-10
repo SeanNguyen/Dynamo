@@ -12,16 +12,19 @@
         </ResourceDictionary>
     </UserControl.Resources>
     
-    <Grid x:Name="mainGrid" Background="Blue" Opacity="{Binding Path=Opacity}" HorizontalAlignment="Left" VerticalAlignment="Top"
+    <Grid x:Name="mainGrid" Background="Transparent" Opacity="{Binding Path=Opacity}" HorizontalAlignment="Left" VerticalAlignment="Top"
           Margin="{Binding Path=Margin}" Visibility="{Binding Path=Opacity, Converter={StaticResource OpacityToVisibilityConverter}}"
-           MouseLeave="InfoBubble_MouseLeave">
+           MouseLeave="InfoBubble_MouseLeave" MouseMove="MainGrid_MouseMove">
         
         <Polygon Name="backgroundPolygon" Fill="{Binding Path=FrameFill}" Stroke="{Binding Path=FrameStrokeColor}" 
                  StrokeThickness="{Binding Path=FrameStrokeThickness}" Points="{Binding Path=FramePoints}"
-                 MouseDown="InfoBubble_PreviewMouseDown">
+                 Margin="0, 0, 5, 5" MouseDown="InfoBubble_PreviewMouseDown">
         </Polygon>
 
-        <StackPanel Name="ContentContainer" MouseEnter="InfoBubble_MouseEnter">
+        <StackPanel Name="ContentContainer" HorizontalAlignment="Center" VerticalAlignment="Center"
+                    MaxHeight="{Binding Path=MaxHeight}" MaxWidth="{Binding Path=MaxWidth}"
+                    MinWidth="{Binding Path=MinWidth}" MinHeight="{Binding Path=MinHeight}"
+                    MouseEnter="InfoBubble_MouseEnter" Margin="0, 0, 5, 5"> 
             <StackPanel.Resources>
                 <Style TargetType="{x:Type TextBox}">
                     <Setter Property="IsReadOnly" Value="True"/>
@@ -32,9 +35,9 @@
                     <Setter Property="FontSize" Value="{Binding Path=TextFontSize}"/>
                     <Setter Property="Margin" Value="{Binding Path=ContentMargin}"/>
                     <Setter Property="MaxWidth" Value="{Binding Path=MaxWidth}"/>
-                    <Setter Property="MinWidth" Value="{Binding Path=MinWidth}"/>
                     <Setter Property="MaxHeight" Value="{Binding Path=MaxHeight}"/>
                     <Setter Property="HorizontalAlignment" Value="Center"/>
+                    <Setter Property="VerticalAlignment" Value="Center"/>
                     <Setter Property="VerticalScrollBarVisibility" Value="Auto"/>
                     <Setter Property="TextWrapping" Value="Wrap"/>
                 </Style>
@@ -84,11 +87,17 @@
             </StackPanel.Resources>
         </StackPanel>
         
-        <Rectangle Name="VerticalResizeBar" Width="5" HorizontalAlignment="Right" Fill="Red" StrokeThickness="0"
-                   MouseEnter="VerticalResizeBar_MouseEnter" MouseLeave="VerticalResizeBar_MouseLeave"
-                   MouseDown="VerticalResizeBar_MouseDown" MouseUp="VerticalResizeBar_MouseUp"/>
+        <Rectangle Name="VerticalResizeBar" Width="15" HorizontalAlignment="Right" Fill="Transparent" StrokeThickness="0"
+                   MouseEnter="VerticalResizeBar_MouseEnter" MouseLeave="ResizeObject_MouseLeave"
+                   MouseDown="VerticalResizeBar_MouseDown" MouseUp="ResizeObject_MouseUp"/>
 
-        <Rectangle Name="HorizontalResizeBar" Height="5" VerticalAlignment="Bottom" Fill="Red" StrokeThickness="0"/>        
-        
+        <Rectangle Name="HorizontalResizeBar" Height="15" VerticalAlignment="Bottom" Fill="Transparent" StrokeThickness="0"
+                   MouseEnter="HorizontalResizeBar_MouseEnter" MouseLeave="ResizeObject_MouseLeave"
+                   MouseDown="HorizontalResizeBar_MouseDown" MouseUp="ResizeObject_MouseUp"/>
+
+        <Rectangle Name="ConnerResizePoint" Height="15" Width="15" VerticalAlignment="Bottom" HorizontalAlignment="Right" 
+                   Fill="Transparent" StrokeThickness="0"
+                   MouseEnter="ConnerResizePoint_MouseEnter" MouseLeave="ResizeObject_MouseLeave"
+                   MouseDown="ConnerResizePoint_MouseDown" MouseUp="ResizeObject_MouseUp"/>
     </Grid>
 </UserControl>

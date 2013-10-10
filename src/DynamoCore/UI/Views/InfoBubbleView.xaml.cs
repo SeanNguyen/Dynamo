@@ -24,7 +24,14 @@ namespace Dynamo.Controls
     /// </summary>
     public partial class InfoBubbleView : UserControl
     {
+        #region Properties
+
+        private bool isResizing = false;
+        private bool isResizeHeight = false;
+        private bool isResizeWidth = false;
+
         public InfoBubbleViewModel ViewModel { get { return GetViewModel(); } }
+        #endregion
 
         public InfoBubbleView()
         {
@@ -152,25 +159,75 @@ namespace Dynamo.Controls
             }
         }
 
+        private void ResizeObject_MouseLeave(object sender, MouseEventArgs e)
+        {
+            Mouse.OverrideCursor = null;
+        }
+
+        private void ResizeObject_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            Mouse.Capture(null);
+            isResizing = false;
+            isResizeHeight = false;
+            isResizeWidth = false;
+        }
+
+        private void MainGrid_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (!isResizing)
+                return;
+
+            Point mouseLocation = Mouse.GetPosition(mainGrid);
+            if (!isResizeHeight)
+                mouseLocation.Y = double.MaxValue;
+            if (!isResizeWidth)
+                mouseLocation.X = double.MaxValue;
+
+            ViewModel.ResizeCommand.Execute(mouseLocation);
+        }
+
+        private void HorizontalResizeBar_MouseEnter(object sender, MouseEventArgs e)
+        {
+            Mouse.OverrideCursor = Cursors.SizeNS;
+        }
+
+        private void HorizontalResizeBar_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            Mouse.Capture(sender as UIElement);
+            e.Handled = true;
+
+            isResizing = true;
+            isResizeHeight = true;
+        }
+
+        private void ConnerResizePoint_MouseEnter(object sender, MouseEventArgs e)
+        {
+            Mouse.OverrideCursor = Cursors.SizeNWSE;
+        }
+
+        private void ConnerResizePoint_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            Mouse.Capture(sender as UIElement);
+            e.Handled = true;
+
+            isResizing = true;
+            isResizeWidth = true;
+            isResizeHeight = true;
+        }
+
+        private void VerticalResizeBar_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            Mouse.Capture(sender as UIElement);
+            e.Handled = true;
+
+            isResizing = true;
+            isResizeWidth = true;
+        }
+
         private void VerticalResizeBar_MouseEnter(object sender, MouseEventArgs e)
         {
             Mouse.OverrideCursor = Cursors.SizeWE;
         }
 
-        private void VerticalResizeBar_MouseLeave(object sender, MouseEventArgs e)
-        {
-            Mouse.OverrideCursor = null;
-        }
-
-        private void VerticalResizeBar_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-
-            Mouse.Capture(this);
-        }
-
-        private void VerticalResizeBar_MouseUp(object sender, MouseButtonEventArgs e)
-        {
-            Mouse.Capture(null);
-        }
     }
 }
