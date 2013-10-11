@@ -127,8 +127,21 @@ namespace Dynamo.ViewModels
         private double minHeight;
         public double MinHeight
         {
-            get { return minWidth; }
-            set { minWidth = value; RaisePropertyChanged("MinHeight"); }
+            get { return minHeight; }
+            set { minHeight = value; RaisePropertyChanged("MinHeight"); }
+        }
+
+        private double contentMaxWidth;
+        public double ContentMaxWidth
+        {
+            get { return contentMaxWidth; }
+            set { contentMaxWidth = value; RaisePropertyChanged("ContentMaxWidth"); }
+        }
+        private double contentMaxHeight;
+        public double ContentMaxHeight
+        {
+            get { return contentMaxHeight; }
+            set { contentMaxHeight = value; RaisePropertyChanged("ContentMaxHeight"); }
         }
 
         private double opacity = 0;
@@ -289,18 +302,23 @@ namespace Dynamo.ViewModels
             return true;
         }
 
-        double count = 0;
         private void Resize(object parameter)
         {
             Point deltaPoint = (Point)parameter;
 
-            double newMaxWidth = deltaPoint.X; // (deltaPoint.X - preview_LastMaxWidth) * 2 + preview_LastMaxWidth;
+            double newMaxWidth = deltaPoint.X;
             double newMaxHeight = deltaPoint.Y;
 
             if (deltaPoint.X != double.MaxValue && newMaxWidth >= preview_MinWidth && newMaxWidth <= preview_MaxWidth)
+            {
                 MaxWidth = newMaxWidth;
+                ContentMaxWidth = newMaxWidth - 10;
+            }
             if (deltaPoint.Y != double.MaxValue && newMaxHeight >= preview_MinHeight)
+            {
                 MaxHeight = newMaxHeight;
+                ContentMaxHeight = newMaxHeight - 17;
+            }
 
             UpdateContent(FullContent);
             UpdateShape(TargetTopLeft, TargetBotRight);
@@ -308,7 +326,6 @@ namespace Dynamo.ViewModels
 
             this.preview_LastMaxWidth = MaxWidth;
             this.preview_LastMaxHeight = MaxHeight;
-            System.Diagnostics.Debug.WriteLine(count++); 
         }
 
         private bool CanResize(object parameter)
@@ -491,12 +508,14 @@ namespace Dynamo.ViewModels
 
             MaxWidth = 400;
             MaxHeight = 200;
+            ContentMaxWidth = MaxWidth - 10;
+            ContentMaxHeight = MaxHeight - 17;
 
             TextFontSize = 13;
             TextForeground = new SolidColorBrush(Color.FromRgb(51, 51, 51));
             TextFontWeight = FontWeights.Normal;
             ContentWrapping = TextWrapping.Wrap;
-            ContentMargin = new Thickness(7, 2, 2, 2);
+            ContentMargin = new Thickness(12, 5, 5, 5);
         }
 
         private void SetStyle_NodeTooltip(Direction connectingDirection)
@@ -507,6 +526,8 @@ namespace Dynamo.ViewModels
 
             MaxWidth = 200;
             MaxHeight = 200;
+            ContentMaxWidth = MaxWidth - 10;
+            ContentMaxHeight = MaxHeight - 16;
 
             TextFontSize = 12;
             TextFontWeight = FontWeights.Light;
@@ -516,13 +537,13 @@ namespace Dynamo.ViewModels
             switch (connectingDirection)
             {
                 case Direction.Left:
-                    ContentMargin = new Thickness(6, 2, 2, 2);
+                    ContentMargin = new Thickness(11, 5, 5, 5);
                     break;
                 case Direction.Right:
-                    ContentMargin = new Thickness(2, 2, 6, 2);
+                    ContentMargin = new Thickness(5, 5, 11, 5);
                     break;
                 case Direction.Bottom:
-                    ContentMargin = new Thickness(2, 2, 2, 8);
+                    ContentMargin = new Thickness(5, 5, 5, 11);
                     break;
             }
         }
@@ -535,12 +556,14 @@ namespace Dynamo.ViewModels
 
             MaxWidth = 300;
             MaxHeight = 200;
+            ContentMaxWidth = MaxWidth - 10;
+            ContentMaxHeight = MaxHeight - 16;
 
             TextFontSize = 13;
             TextFontWeight = FontWeights.Light;
             TextForeground = new SolidColorBrush(Color.FromRgb(190, 70, 70));
             ContentWrapping = TextWrapping.Wrap;
-            ContentMargin = new Thickness(2, 2, 2, 9);
+            ContentMargin = new Thickness(5, 5, 5, 12);
         }
 
         private void SetStyle_Preview()
@@ -553,17 +576,29 @@ namespace Dynamo.ViewModels
             TextFontWeight = FontWeights.Light;
             TextForeground = new SolidColorBrush(Color.FromRgb(153, 153, 153));
             ContentWrapping = TextWrapping.Wrap;
-            ContentMargin = new Thickness(2, 9, 2, 2);
+            ContentMargin = new Thickness(5, 12, 5, 5);
 
             if (this.preview_LastMaxHeight == double.MaxValue)
+            {
                 this.MaxHeight = this.preview_DefaultMaxHeight;
+                this.ContentMaxHeight = this.preview_DefaultMaxHeight - 17;
+            }
             else
+            {
                 this.MaxHeight = this.preview_LastMaxHeight;
+                this.ContentMaxHeight = this.preview_LastMaxHeight - 17;
+            }
 
             if (this.preview_LastMaxWidth == double.MaxValue)
+            {
                 this.MaxWidth = this.preview_DefaultMaxWidth;
+                this.ContentMaxWidth = this.preview_DefaultMaxWidth - 10;
+            }
             else
+            {
                 this.MaxWidth = this.preview_LastMaxWidth;
+                this.ContentMaxWidth = this.preview_LastMaxWidth - 10;
+            }
 
             MinHeight = this.preview_MinHeight;
             MinWidth = this.preview_MinWidth;
@@ -579,12 +614,14 @@ namespace Dynamo.ViewModels
             MinWidth = 35;
             MaxHeight = 200;
             MinHeight = 0;
+            ContentMaxWidth = MaxWidth - 10;
+            ContentMaxHeight = MaxHeight - 17;
 
             TextFontSize = 13;
             TextFontWeight = FontWeights.Light;
             TextForeground = new SolidColorBrush(Color.FromRgb(153, 153, 153));
             ContentWrapping = TextWrapping.Wrap;
-            ContentMargin = new Thickness(2, 9, 2, 2);
+            ContentMargin = new Thickness(5, 12, 5, 5);
         }
 
         private PointCollection GetFramePoints_LibraryItemPreview()
@@ -633,7 +670,7 @@ namespace Dynamo.ViewModels
             else if (botRight.X + EstimatedWidth <= dynSettings.Controller.DynamoViewModel.WorkspaceActualWidth)
             {
                 limitedDirection = Direction.Top;
-                ContentMargin = new Thickness(6, 2, 2, 2);
+                ContentMargin = new Thickness(11, 5, 5, 5);
                 UpdateContent(Content);
 
                 pointCollection.Add(new Point(EstimatedWidth, 0));
@@ -645,7 +682,7 @@ namespace Dynamo.ViewModels
             else
             {
                 limitedDirection = Direction.TopRight;
-                ContentMargin = new Thickness(2, 2, 6, 2);
+                ContentMargin = new Thickness(5, 5, 11, 5);
                 UpdateContent(Content);
 
                 pointCollection.Add(new Point(EstimatedWidth, 0));
@@ -665,7 +702,7 @@ namespace Dynamo.ViewModels
             if (botRight.X + EstimatedWidth > dynSettings.Controller.DynamoViewModel.WorkspaceActualWidth)
             {
                 limitedDirection = Direction.Right;
-                ContentMargin = new Thickness(2, 2, 6, 2);
+                ContentMargin = new Thickness(5, 5, 11, 5);
                 UpdateContent(Content);
                 pointCollection = GetFramePoints_NodeTooltipConnectRight(topLeft, botRight);
             }
@@ -689,7 +726,7 @@ namespace Dynamo.ViewModels
             if (topLeft.X - EstimatedWidth < 0)
             {
                 limitedDirection = Direction.Left;
-                ContentMargin = new Thickness(6, 2, 2, 2);
+                ContentMargin = new Thickness(11, 5, 5, 5);
                 UpdateContent(Content);
                 pointCollection = GetFramePoints_NodeTooltipConnectLeft(topLeft, botRight);
             }

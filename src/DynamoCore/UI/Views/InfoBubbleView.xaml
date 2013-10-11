@@ -19,13 +19,13 @@
         
         <Polygon Name="backgroundPolygon" Fill="{Binding Path=FrameFill}" Stroke="{Binding Path=FrameStrokeColor}" 
                  StrokeThickness="{Binding Path=FrameStrokeThickness}" Points="{Binding Path=FramePoints}"
-                 Margin="0, 0, 5, 5" MouseDown="InfoBubble_PreviewMouseDown">
+                 Margin="0, 0, 0, 0" MouseDown="InfoBubble_PreviewMouseDown">
         </Polygon>
 
         <StackPanel Name="ContentContainer" HorizontalAlignment="Center" VerticalAlignment="Center"
                     MaxHeight="{Binding Path=MaxHeight}" MaxWidth="{Binding Path=MaxWidth}"
                     MinWidth="{Binding Path=MinWidth}" MinHeight="{Binding Path=MinHeight}"
-                    MouseEnter="InfoBubble_MouseEnter" Margin="0, 0, 5, 5"> 
+                    MouseEnter="InfoBubble_MouseEnter"> 
             <StackPanel.Resources>
                 <Style TargetType="{x:Type TextBox}">
                     <Setter Property="IsReadOnly" Value="True"/>
@@ -35,8 +35,8 @@
                     <Setter Property="FontWeight" Value="{Binding Path=TextFontWeight}"/>
                     <Setter Property="FontSize" Value="{Binding Path=TextFontSize}"/>
                     <Setter Property="Margin" Value="{Binding Path=ContentMargin}"/>
-                    <Setter Property="MaxWidth" Value="{Binding Path=MaxWidth}"/>
-                    <Setter Property="MaxHeight" Value="{Binding Path=MaxHeight}"/>
+                    <Setter Property="MaxWidth" Value="{Binding Path=ContentMaxWidth}"/>
+                    <Setter Property="MaxHeight" Value="{Binding Path=ContentMaxHeight}"/>
                     <Setter Property="HorizontalAlignment" Value="Center"/>
                     <Setter Property="VerticalAlignment" Value="Center"/>
                     <Setter Property="VerticalScrollBarVisibility" Value="Auto"/>
@@ -90,18 +90,16 @@
         
         <Rectangle Name="VerticalResizeBar" Width="15" HorizontalAlignment="Right" Fill="Transparent" StrokeThickness="0"
                    MouseEnter="VerticalResizeBar_MouseEnter" MouseLeave="ResizeObject_MouseLeave"
-                   MouseDown="VerticalResizeBar_MouseDown" MouseUp="ResizeObject_MouseUp"
-                   Visibility="{Binding Path=InfoBubbleStyle, Converter={StaticResource StyleToVisibilityConverter}}"/>
+                   MouseDown="VerticalResizeBar_MouseDown" MouseUp="ResizeObject_MouseUp"/>
 
         <Rectangle Name="HorizontalResizeBar" Height="15" VerticalAlignment="Bottom" Fill="Transparent" StrokeThickness="0"
                    MouseEnter="HorizontalResizeBar_MouseEnter" MouseLeave="ResizeObject_MouseLeave"
                    MouseDown="HorizontalResizeBar_MouseDown" MouseUp="ResizeObject_MouseUp"
-                   Visibility="{Binding Path=InfoBubbleStyle, Converter={StaticResource StyleToVisibilityConverter}}"/>
+                   />
 
         <Rectangle Name="ConnerResizePoint" Height="15" Width="15" VerticalAlignment="Bottom" HorizontalAlignment="Right" 
                    Fill="Transparent" StrokeThickness="0"
                    MouseEnter="ConnerResizePoint_MouseEnter" MouseLeave="ResizeObject_MouseLeave"
-                   MouseDown="ConnerResizePoint_MouseDown" MouseUp="ResizeObject_MouseUp"
-                   Visibility="{Binding Path=InfoBubbleStyle, Converter={StaticResource StyleToVisibilityConverter}}"/>
+                   MouseDown="ConnerResizePoint_MouseDown" MouseUp="ResizeObject_MouseUp"/>
     </Grid>
 </UserControl>
