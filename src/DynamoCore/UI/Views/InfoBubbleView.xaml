@@ -89,18 +89,19 @@
         </StackPanel>
         
         <Rectangle Name="VerticalResizeBar" Width="15" HorizontalAlignment="Right" Fill="Transparent" StrokeThickness="0"
-                   Margin="0 0 -10 0"
+                   Margin="0 0 -10 0" Visibility="{Binding Path=InfoBubbleStyle, Converter={StaticResource StyleToVisibilityConverter}}"
                    MouseEnter="VerticalResizeBar_MouseEnter" MouseLeave="ResizeObject_MouseLeave"
                    MouseDown="VerticalResizeBar_MouseDown" MouseUp="ResizeObject_MouseUp"/>
 
         <Rectangle Name="HorizontalResizeBar" Height="15" VerticalAlignment="Bottom" Fill="Transparent" StrokeThickness="0"
-                   Margin="0 0 0 -10"
+                   Margin="0 0 0 -10" Visibility="{Binding Path=InfoBubbleStyle, Converter={StaticResource StyleToVisibilityConverter}}"
                    MouseEnter="HorizontalResizeBar_MouseEnter" MouseLeave="ResizeObject_MouseLeave"
                    MouseDown="HorizontalResizeBar_MouseDown" MouseUp="ResizeObject_MouseUp"
                    />
 
         <Rectangle Name="ConnerResizePoint" Height="15" Width="15" VerticalAlignment="Bottom" HorizontalAlignment="Right" 
-                   Fill="Transparent" StrokeThickness="0" Margin="0 0 -5 -5"
+                   Fill="Transparent" StrokeThickness="0" Margin="0 0 -10 -10"
+                   Visibility="{Binding Path=InfoBubbleStyle, Converter={StaticResource StyleToVisibilityConverter}}"
                    MouseEnter="ConnerResizePoint_MouseEnter" MouseLeave="ResizeObject_MouseLeave"
                    MouseDown="ConnerResizePoint_MouseDown" MouseUp="ResizeObject_MouseUp"/>
     </Grid>

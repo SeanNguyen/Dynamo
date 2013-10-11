@@ -375,7 +375,7 @@ namespace Dynamo.ViewModels
         {
             if (infoBubbleStyle == style && this.ConnectingDirection == connectingDirection)
                 return;
-            infoBubbleStyle = style;
+            InfoBubbleStyle = style;
             ConnectingDirection = connectingDirection;
 
             switch (style)
