@@ -9,6 +9,7 @@
     <UserControl.Resources>
         <ResourceDictionary>
             <controls:OpacityToVisibilityConverter x:Key="OpacityToVisibilityConverter"/>
+            <controls:InfoBubbleStyleToVisibilityConverter x:Key="StyleToVisibilityConverter"/>
         </ResourceDictionary>
     </UserControl.Resources>
     
@@ -89,15 +90,18 @@
         
         <Rectangle Name="VerticalResizeBar" Width="15" HorizontalAlignment="Right" Fill="Transparent" StrokeThickness="0"
                    MouseEnter="VerticalResizeBar_MouseEnter" MouseLeave="ResizeObject_MouseLeave"
-                   MouseDown="VerticalResizeBar_MouseDown" MouseUp="ResizeObject_MouseUp"/>
+                   MouseDown="VerticalResizeBar_MouseDown" MouseUp="ResizeObject_MouseUp"
+                   Visibility="{Binding Path=InfoBubbleStyle, Converter={StaticResource StyleToVisibilityConverter}}"/>
 
         <Rectangle Name="HorizontalResizeBar" Height="15" VerticalAlignment="Bottom" Fill="Transparent" StrokeThickness="0"
                    MouseEnter="HorizontalResizeBar_MouseEnter" MouseLeave="ResizeObject_MouseLeave"
-                   MouseDown="HorizontalResizeBar_MouseDown" MouseUp="ResizeObject_MouseUp"/>
+                   MouseDown="HorizontalResizeBar_MouseDown" MouseUp="ResizeObject_MouseUp"
+                   Visibility="{Binding Path=InfoBubbleStyle, Converter={StaticResource StyleToVisibilityConverter}}"/>
 
         <Rectangle Name="ConnerResizePoint" Height="15" Width="15" VerticalAlignment="Bottom" HorizontalAlignment="Right" 
                    Fill="Transparent" StrokeThickness="0"
                    MouseEnter="ConnerResizePoint_MouseEnter" MouseLeave="ResizeObject_MouseLeave"
-                   MouseDown="ConnerResizePoint_MouseDown" MouseUp="ResizeObject_MouseUp"/>
+                   MouseDown="ConnerResizePoint_MouseDown" MouseUp="ResizeObject_MouseUp"
+                   Visibility="{Binding Path=InfoBubbleStyle, Converter={StaticResource StyleToVisibilityConverter}}"/>
     </Grid>
 </UserControl>
