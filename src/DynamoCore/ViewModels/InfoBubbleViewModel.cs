@@ -21,6 +21,8 @@ namespace Dynamo.ViewModels
             LibraryItemPreview,
             NodeTooltip,
             Error,
+            CodeBlockNodeWarning,
+            CodeBlockNodeError,
             None
         }
         public enum Direction
@@ -317,6 +319,12 @@ namespace Dynamo.ViewModels
                 case Style.Error:
                     SetStyle_Error();
                     break;
+                case Style.CodeBlockNodeWarning:
+                    SetStyle_CodeBlockNodeWarning();
+                    break;
+                case Style.CodeBlockNodeError:
+                    SetStyle_CodeBlocknodeError();
+                    break;
                 case Style.None:
                     throw new ArgumentException("InfoWindow didn't have a style (456B24E0F400)");
             }
@@ -462,6 +470,36 @@ namespace Dynamo.ViewModels
             TextForeground = new SolidColorBrush(Color.FromRgb(190, 70, 70));
             ContentWrapping = TextWrapping.Wrap;
             ContentMargin = new Thickness(5, 5, 5, 12);
+        }
+
+        private void SetStyle_CodeBlockNodeWarning()
+        {
+            FrameFill = new SolidColorBrush(Color.FromRgb(255, 255, 255));
+            FrameStrokeThickness = 1;
+            FrameStrokeColor = new SolidColorBrush(Color.FromRgb(211, 165, 73));
+
+            MaxWidth = 300;
+
+            TextFontSize = 13;
+            TextFontWeight = FontWeights.Light;
+            TextForeground = new SolidColorBrush(Color.FromRgb(102, 102, 102));
+            ContentWrapping = TextWrapping.Wrap;
+            ContentMargin = new Thickness(12, 5, 5, 5);
+        }
+
+        private void SetStyle_CodeBlocknodeError()
+        {
+            FrameFill = new SolidColorBrush(Color.FromRgb(255, 255, 255));
+            FrameStrokeThickness = 1;
+            FrameStrokeColor = new SolidColorBrush(Color.FromRgb(191, 70, 70));
+
+            MaxWidth = 300;
+
+            TextFontSize = 13;
+            TextFontWeight = FontWeights.Light;
+            TextForeground = new SolidColorBrush(Color.FromRgb(191, 70, 70));
+            ContentWrapping = TextWrapping.Wrap;
+            ContentMargin = new Thickness(12, 5, 5, 5);
         }
 
         private PointCollection GetFramePoints_LibraryItemPreview()
