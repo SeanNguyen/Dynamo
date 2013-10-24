@@ -15,8 +15,26 @@ namespace Dynamo.Nodes
     [NodeDescription("Allows for code to be written")] //<--Change the descp :|
     public partial class CodeBlockNodeModel : NodeModel
     {
+        #region Properties
+
+        private List<ProtoCore.BuildData.ErrorEntry> errors = new List<ProtoCore.BuildData.ErrorEntry>();
+        public List<ProtoCore.BuildData.ErrorEntry> Errors
+        {
+            get { return errors; }
+            set { errors = value; RaisePropertyChanged("Errors"); }
+        }
+        private List<ProtoCore.BuildData.WarningEntry> warnings = new List<ProtoCore.BuildData.WarningEntry>();
+        public List<ProtoCore.BuildData.WarningEntry> Warnings
+        {
+            get { return warnings; }
+            set { warnings = value; RaisePropertyChanged("Warning"); }
+        }
+
         private string code = "Your Code Goes Here";
         private List<Statement> codeStatements = new List<Statement>();
+
+        #endregion
+       
 
         #region Public Methods
         public CodeBlockNodeModel()
@@ -24,12 +42,6 @@ namespace Dynamo.Nodes
             codeStatements = new List<Statement>();
             code = "Your Code Goes Here";
             this.ArgumentLacing = LacingStrategy.Disabled;
-        }
-
-        public void DisplayError()
-        {
-            DynamoLogger.Instance.Log("Error in Code Block Node");
-            this.State = ElementState.ERROR;
         }
 
         /// <summary>
@@ -170,11 +182,8 @@ namespace Dynamo.Nodes
                     codeStatements.Add(tempStatement);
                 }
             }
-            else
-            {
-                DisplayError();
-            }
 
+            UpdateErrorsAndWarnings(errors, warnings);
             SetPorts(); //Set the input and output ports based on the statements
         }
 
@@ -263,6 +272,14 @@ namespace Dynamo.Nodes
                 initialMarginRequired = 0;
             }
             return result;
+        }
+
+        private void UpdateErrorsAndWarnings(List<ProtoCore.BuildData.ErrorEntry> newErrors, List<ProtoCore.BuildData.WarningEntry> newWarnings)
+        {
+            if (newErrors != null)
+                this.Errors = newErrors;
+            if (newWarnings != null)
+                this.Warnings = newWarnings;
         }
         #endregion
 
