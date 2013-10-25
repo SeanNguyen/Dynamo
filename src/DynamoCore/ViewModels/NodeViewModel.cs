@@ -358,6 +358,10 @@ namespace Dynamo.ViewModels
                 case "IsUpstreamVisible":
                     RaisePropertyChanged("IsUpstreamVisible");
                     break;
+                case "Errors":
+                    break;
+                case "Warning":
+                    break;
             }
         }
 

@@ -170,7 +170,7 @@ namespace Dynamo.Nodes
             List<ProtoCore.AST.Node> resultNodes = new List<Node>();
             List<ProtoCore.BuildData.ErrorEntry> errors;
             List<ProtoCore.BuildData.WarningEntry> warnings;
-            if(GraphToDSCompiler.GraphUtilities.Parse(code,out resultNodes,out errors,out  warnings, unboundIdentifiers) && resultNodes!=null)
+            if (GraphToDSCompiler.GraphUtilities.Parse(code, out resultNodes, out errors, out  warnings, unboundIdentifiers) && resultNodes != null)
             {
                 //Create an instance of statement for each code statement written by the user
                 foreach (Node node in resultNodes)
@@ -181,9 +181,12 @@ namespace Dynamo.Nodes
                     }
                     codeStatements.Add(tempStatement);
                 }
+                UpdateErrorsAndWarnings(null, null);
             }
-
-            UpdateErrorsAndWarnings(errors, warnings);
+            else
+            {
+                UpdateErrorsAndWarnings(errors, warnings);
+            }
             SetPorts(); //Set the input and output ports based on the statements
         }
 
@@ -278,8 +281,13 @@ namespace Dynamo.Nodes
         {
             if (newErrors != null)
                 this.Errors = newErrors;
+            else
+                this.Errors = new List<ProtoCore.BuildData.ErrorEntry>();
+
             if (newWarnings != null)
                 this.Warnings = newWarnings;
+            else
+                this.Warnings = new List<ProtoCore.BuildData.WarningEntry>();
         }
         #endregion
 
