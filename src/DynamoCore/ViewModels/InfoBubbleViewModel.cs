@@ -288,6 +288,7 @@ namespace Dynamo.ViewModels
 
         private void InstantCollapse(object parameter)
         {
+            this.fadeInTimer.Stop();
             Opacity = 0;
         }
 
