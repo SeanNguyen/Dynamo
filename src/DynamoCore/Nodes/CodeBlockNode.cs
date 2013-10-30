@@ -26,12 +26,6 @@ namespace Dynamo.Nodes
             this.ArgumentLacing = LacingStrategy.Disabled;
         }
 
-        public void DisplayError()
-        {
-            DynamoLogger.Instance.Log("Error in Code Block Node");
-            this.State = ElementState.ERROR;
-        }
-
         /// <summary>
         /// Formats user text by :
         /// 1. Removing whitespaces form the front and back (whitespaces -> space, tab or enter)
@@ -60,6 +54,7 @@ namespace Dynamo.Nodes
         #endregion
 
         #region Properties
+        
         public string Code
         {
             get
@@ -85,6 +80,21 @@ namespace Dynamo.Nodes
                 }
             }
         }
+
+        List<ProtoCore.BuildData.ErrorEntry> errors;
+        List<ProtoCore.BuildData.ErrorEntry> Errors
+        {
+            get { return errors; }
+            set { errors = value; RaisePropertyChanged("Errors"); }
+        }
+
+        List<ProtoCore.BuildData.WarningEntry> warnings;
+        List<ProtoCore.BuildData.WarningEntry> Warnings
+        {
+            get { return warnings; }
+            set { warnings = value; RaisePropertyChanged("Warnings"); }
+        }
+
         #endregion
 
         #region Protected Methods
@@ -169,10 +179,11 @@ namespace Dynamo.Nodes
                     }
                     codeStatements.Add(tempStatement);
                 }
+                SetErrorsWarnings(null, null);
             }
             else
             {
-                DisplayError();
+                SetErrorsWarnings(errors, warnings);
             }
 
             SetPorts(unboundIdentifiers); //Set the input and output ports based on the statements
@@ -254,6 +265,20 @@ namespace Dynamo.Nodes
             }
             return result;
         }
+
+        private void SetErrorsWarnings(List<ProtoCore.BuildData.ErrorEntry> errors, List<ProtoCore.BuildData.WarningEntry> warnings)
+        {
+            if (errors == null)
+                this.Errors = new List<ProtoCore.BuildData.ErrorEntry>();
+            else
+                this.Errors = errors;
+
+            if (warnings == null)
+                this.Warnings = new List<ProtoCore.BuildData.WarningEntry>();
+            else
+                this.Warnings = warnings;
+        }
+
         #endregion
 
     }
