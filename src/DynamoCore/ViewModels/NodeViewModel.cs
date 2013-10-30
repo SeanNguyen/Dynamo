@@ -66,6 +66,9 @@ namespace Dynamo.ViewModels
 
         public InfoBubbleViewModel PreviewBubble { get; set; }
 
+        public List<InfoBubbleViewModel> ErrorBubbles_CBN { get; set; }
+        public List<InfoBubbleViewModel> WarningBubbles_CBN { get; set; }
+
         public string ToolTipText
         {
             get { return nodeLogic.ToolTipText; }
@@ -389,6 +392,12 @@ namespace Dynamo.ViewModels
                     UpdateErrorBubblePosition();
                     UpdatePreviewBubblePosition();
                     break;
+                case "Errors":
+                    UpdateCbnErrorsBubble();
+                    break;
+                case "Warnings":
+                    UpdateCbnWarningsBubble();
+                    break;
             }
         }
 
@@ -517,6 +526,42 @@ namespace Dynamo.ViewModels
             data.TopLeft = topLeft;
             data.BotRight = botRight;
             this.PreviewBubble.UpdatePositionCommand.Execute(data);
+        }
+
+        private void UpdateCbnErrorsBubble()
+        {
+            if (NodeModel == null || !(NodeModel is CodeBlockNodeModel))
+                return;
+            CodeBlockNodeModel cbn = this.NodeModel as CodeBlockNodeModel;
+
+            foreach (ProtoCore.BuildData.ErrorEntry errorData in cbn.Errors)
+            {
+                //create data packet to send to preview bubble
+                InfoBubbleViewModel.Style style = InfoBubbleViewModel.Style.NodeTooltip;
+                Point topLeft = new Point(NodeModel.X, NodeModel.Y);
+                Point botRight = new Point(NodeModel.X + NodeModel.Width, NodeModel.Y + NodeModel.Height);
+                string content = errorData.Message;
+                InfoBubbleViewModel.Direction connectingDirection = InfoBubbleViewModel.Direction.Right;
+                InfoBubbleDataPacket data = new InfoBubbleDataPacket(style, topLeft, botRight, content, connectingDirection);
+            }
+        }
+
+        private void UpdateCbnWarningsBubble()
+        {
+            if (NodeModel == null || !(NodeModel is CodeBlockNodeModel))
+                return;
+            CodeBlockNodeModel cbn = this.NodeModel as CodeBlockNodeModel;
+
+            foreach (ProtoCore.BuildData.WarningEntry warningData in cbn.Warnings)
+            {
+                //create data packet to send to preview bubble
+                InfoBubbleViewModel.Style style = InfoBubbleViewModel.Style.NodeTooltip;
+                Point topLeft = new Point(NodeModel.X, NodeModel.Y);
+                Point botRight = new Point(NodeModel.X + NodeModel.Width, NodeModel.Y + NodeModel.Height);
+                string content = warningData.msg;
+                InfoBubbleViewModel.Direction connectingDirection = InfoBubbleViewModel.Direction.Left;
+                InfoBubbleDataPacket data = new InfoBubbleDataPacket(style, topLeft, botRight, content, connectingDirection);
+            }
         }
 
         private void ShowHelp(object parameter)

@@ -81,15 +81,15 @@ namespace Dynamo.Nodes
             }
         }
 
-        List<ProtoCore.BuildData.ErrorEntry> errors;
-        List<ProtoCore.BuildData.ErrorEntry> Errors
+        private List<ProtoCore.BuildData.ErrorEntry> errors;
+        public List<ProtoCore.BuildData.ErrorEntry> Errors
         {
             get { return errors; }
             set { errors = value; RaisePropertyChanged("Errors"); }
         }
 
-        List<ProtoCore.BuildData.WarningEntry> warnings;
-        List<ProtoCore.BuildData.WarningEntry> Warnings
+        private List<ProtoCore.BuildData.WarningEntry> warnings;
+        public List<ProtoCore.BuildData.WarningEntry> Warnings
         {
             get { return warnings; }
             set { warnings = value; RaisePropertyChanged("Warnings"); }
@@ -179,7 +179,7 @@ namespace Dynamo.Nodes
                     }
                     codeStatements.Add(tempStatement);
                 }
-                SetErrorsWarnings(null, null);
+                SetErrorsWarnings(errors, warnings);
             }
             else
             {
